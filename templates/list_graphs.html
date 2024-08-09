@@ -1,0 +1,15 @@
+<head>
+    <title>Available citation graphs</title>
+
+<body>
+    <h1>
+        Available Graphs:
+    </h1>
+    <ul>
+    {% for graph in graphs %}
+    <li><a href="/{{ graph }}">{{ graph }}.bib</a></li>
+    {% endfor %}
+    </ul>
+</body>
+
+</html>

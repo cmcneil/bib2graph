@@ -1,0 +1,125 @@
+<html>
+  <head>
+    <style> body { margin: 0; } </style>
+    <style>
+      .node-label {
+        font-size: 14px;
+        padding: 1px 4px;
+        border-radius: 4px;
+        background-color: rgba(0,0,0,0.5);
+        user-select: none;
+      }
+
+      .infotext {
+        position: absolute;
+        background-color: aliceblue;
+        opacity: 0.7;
+        border-radius: 10px;
+        padding: 10px;
+        z-index: 2;
+      }
+
+      #infobox {
+        left: 20px;
+        top: 20px;
+        width: 35%;
+      }
+
+      #abstractbox {
+        left: 20px;
+        bottom: 20px;
+        width: 50%;
+        max-height: 50%;
+        overflow-y: scroll;
+      }
+
+      #titlebox {
+        right: 20px;
+        top: 20px;
+        font-size: 24px;
+        font-weight: bold;
+        font-family: sans-serif;
+      }
+
+      a { 
+        color: black; 
+        text-decoration:none; 
+      }
+    </style>
+
+    <script src="https://unpkg.com/3d-force-graph"></script>
+    <script>
+      function clickGraphBg() {
+        const abstract = document.getElementById("abstractbox");
+        abstractbox.style.visibility = "hidden";
+      }
+    </script>
+  </head>
+
+  <body>
+    <div style="position: relative; display: inline-block; width: 100%;">
+      <div id="titlebox" class="infotext">
+        <a href="/static/graphs_bib/{{ bib_filename }}.bib">{{ bib_filename }}.bib</a>
+      </div>
+      <div id="infobox" class="infotext" style="display: inline; visibility: hidden;">
+        <b>Id:</b> <div id="shortName" style="display: inline;"></div>
+        <br><br>
+        <b>Title:</b> <div id="title" style="display: inline;"></div>
+        <br><br>
+        <b>Authors:</b> <div id="authors" style="display: inline;"></div>
+        <br><br>
+        <b>Doi:</b> <a id="doi" href=""></a>
+      </div>
+      <div id="graph" style="position: absolute; z-index: 1;" onclick="clickGraphBg()"></div>
+      
+    </div>
+    <div id="abstractbox" class="infotext" style="display: inline; visibility: hidden;">
+      <b>Abstract:</b><br> <div id="abstract" style="display: inline;"></div>
+    </div>
+    <script type="importmap">{ "imports": { "three": "https://unpkg.com/three/build/three.module.js" }}</script>
+    <script type="module">
+      import graph_data from '../static/graphs_json/{{ bib_filename }}.json' with { type: 'json' };
+      import { CSS2DRenderer, CSS2DObject } from 'https://unpkg.com/three/examples/jsm/renderers/CSS2DRenderer.js';
+
+      const Graph = ForceGraph3D({
+          extraRenderers: [new CSS2DRenderer()]
+        })
+        (document.getElementById('graph'))
+          .graphData(graph_data)
+          .nodeLabel('id')
+          .nodeRelSize(0.7)
+          .nodeColor('color')
+          .nodeLabel('title')
+          .nodeVal('size')
+          .linkDirectionalParticles(5)
+          .linkDirectionalParticleWidth(0.35)
+          .linkDirectionalParticleSpeed(0.006)
+          .linkWidth(0.5)
+          .onNodeClick(node => {
+            const infoBox = document.getElementById("infobox");
+            infoBox.style.visibility = "visible";
+            const shortName = document.getElementById("shortName");
+            shortName.innerHTML = node.shortName;
+            const title = document.getElementById("title");
+            title.innerHTML = node.title;
+            const doi = document.getElementById("doi");
+            doi.innerHTML = node.doi;
+            doi.href = "https://doi.org/" + node.doi;
+            const abstractbox = document.getElementById("abstractbox");
+            abstractbox.style.visibility = "visible";
+            const abstract = document.getElementById("abstract");
+            abstract.innerHTML = node.abstract;
+            const authors = document.getElementById("authors");
+            authors.innerHTML = node.authors.map(author => author.replace(',', '')).join(', ');
+          })
+          .nodeThreeObject(node => {
+            const nodeEl = document.createElement('div');
+            nodeEl.textContent = node.shortName;
+            nodeEl.style.color = node.color;
+            nodeEl.className = 'node-label';
+            return new CSS2DObject(nodeEl);
+          })
+          .nodeThreeObjectExtend(true);
+    </script>
+  </body>
+</html>
