@@ -11,7 +11,7 @@ at a glance and decide what order to read things in. In addition, the semantic s
 can't share all abstracts for legal reasons, whereas your management software (such as Paperpile)
  is more likely to have the abstracts.
 
- It is unecessarily animated for fun.
+ It is unecessarily animated for fun. Interactive example at [carsonmcneil.me/citegraphs/rephd](carsonmcneil.me/citegraphs/rephd)
 
 ## Usage
 Getting started takes two commands. After downloading the repo, install dependencies:
